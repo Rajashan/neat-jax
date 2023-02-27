@@ -16,3 +16,10 @@ class Genome:
         self.nodes = nodes
         self.connections = connections
         self.fitness = None
+
+class Species:
+    def __init__(self, representative):
+        self.representative = representative
+        self.members = [representative]
+        self.fitness = None
+        self.adjusted_fitness = None
