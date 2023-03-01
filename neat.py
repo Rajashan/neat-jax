@@ -1,6 +1,7 @@
 import random
 
 from genotype import NodeGene, ConnectionGene, Genome, Species
+from util import compatibility_distance
 
 class NEAT:
     def __init__(self, num_inputs, num_outputs):
@@ -9,6 +10,7 @@ class NEAT:
         self.innovation_number = 0
         self.population = []
         self.species = []
+        self.generation = 0
         
         # Hyperparameters
         self.compatibility_threshold = 3.0 # Adjust as needed
@@ -36,6 +38,8 @@ class NEAT:
                     connections.append(ConnectionGene(j, k + self.num_inputs, random.uniform(-1, 1), True, self.innovation_number))
             genome = Genome(nodes, connections)
             self.population.append(genome)
+
+            self.population_size = len(self.population)
             
     def mutate(self, genome):
         # Mutate weights
@@ -61,17 +65,17 @@ class NEAT:
 
         if random.random() < self.connection_add_rate:
           # Add a new connection
-            node1 = random.choice(genome.nodes)
-            node2 = random.choice(genome.nodes)
-            if node1.node_type == 'output' and node2.node_type == 'input':
+          node1 = random.choice(genome.nodes)
+          node2 = random.choice(genome.nodes)
+          if node1.node_type == 'output' and node2.node_type == 'input':
             # Swap nodes to avoid output to input connections
-              node1, node2 = node2, node1
-        existing_connection = False
-        for connection in genome.connections:
+            node1, node2 = node2, node1
+          existing_connection = False
+          for connection in genome.connections:
             if connection.in_node == node1.node_id and connection.out_node == node2.node_id:
                 existing_connection = True
                 break
-        if not existing_connection:
+          if not existing_connection:
             self.innovation_number += 1
             connection = ConnectionGene(node1.node_id, node2.node_id, random.uniform(-1, 1), True, self.innovation_number)
             genome.connections.append(connection)
@@ -154,4 +158,4 @@ class NEAT:
         new_population.append(child)
       self.population = new_population
       self.generation += 1
-      self.speciate()
+      #self.speciate()
