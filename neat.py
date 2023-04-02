@@ -151,6 +151,7 @@ class NEAT:
                     child = self.mutate(parent)
                 offspring.append(child)
             new_population.extend(offspring)
+            
       while len(new_population) < self.population_size:
         # Add new genomes to the population by mutating existing genomes
         parent = random.choice(self.population)

@@ -28,14 +28,22 @@ def genome_to_network_params(genome):
     num_hidden = len(node_genes) - num_inputs - num_outputs
     
     # Initialize the weights
-    input_weights_shape = (num_inputs, num_hidden)
-    hidden_weights_shape = (num_hidden, num_hidden)
-    output_weights_shape = (num_hidden, num_outputs)
-    input_weights = jnp.zeros(input_weights_shape)
-    hidden_weights = jnp.zeros(hidden_weights_shape)
-    output_weights = jnp.zeros(output_weights_shape)
-    params = {'input_weights': input_weights, 'hidden_weights': hidden_weights, 'output_weights': output_weights}
-    """
+    if num_hidden > 0:
+        input_weights_shape = (num_inputs, num_hidden)
+        hidden_weights_shape = (num_hidden, num_hidden)
+        output_weights_shape = (num_hidden, num_outputs)
+    
+        input_weights = jnp.zeros(input_weights_shape)
+        hidden_weights = jnp.zeros(hidden_weights_shape)
+        output_weights = jnp.zeros(output_weights_shape)
+        
+        params = {'input_weights': input_weights, 'hidden_weights': hidden_weights, 'output_weights': output_weights}
+
+    else:
+        weights_shape = (num_inputs, num_outputs)
+        weights = jnp.zeros(weights_shape)
+        params = {'weights': weights}
+    
     # Set the weights based on the connection genes
     for connection_gene in connection_genes:
         if connection_gene.enabled:
@@ -43,7 +51,7 @@ def genome_to_network_params(genome):
                 out_node_index = next((i for i, node_gene in enumerate(node_genes) if node_gene.node_id == connection_gene.out_node), None) - num_inputs
                 in_node_index = next((i for i, node_gene in enumerate(node_genes) if node_gene.node_id == connection_gene.in_node), None)
                 params['hidden_weights'][in_node_index, out_node_index] = connection_gene.weight
-    """
+    
     return params
 
 def activation(x):
